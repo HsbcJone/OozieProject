@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<workflow-app xmlns="uri:oozie:workflow:0.5" name="java-wf">
+    <start to="java-node"/>
+    <decision name="decision">
+        <switch>
+            <case to="end">${(wf:actionData('java-node')['key1'] == "value1") and (wf:actionData('java-node')['key2'] == "value2")}</case>
+            <default to="fail"/>
+        </switch>
+    </decision>
+    <action name="java-node">
+        <java>
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>oozie.launcher.mapred.job.queue.name</name>
+                    <value>${launcher_queue}</value>
+                </property>
+                <property>
+                    <name>mapreduce.job.queuename</name>
+                    <value>${mapreduce_queue}</value>
+                </property>
+            </configuration>
+            <main-class>org.apache.oozie.examples.ExampleDecisionM</main-class>
+            <arg>yes</arg>
+            <arg>mengxp</arg>
+            <capture-output/>
+        </java>
+        <ok to="decision"/>
+        <error to="fail"/>
+    </action>
+    <kill name="fail">
+        <message>Java failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end"/>
+</workflow-app>

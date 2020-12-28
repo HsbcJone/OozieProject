@@ -1,0 +1,1 @@
+## dim_model_from_jwth_table 建模引用的ods层的表中哪些来源于jwth调度的 因为还有部分来源于friday-loader

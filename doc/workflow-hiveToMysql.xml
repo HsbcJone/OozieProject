@@ -1,0 +1,30 @@
+<workflow-app name="etl_ds_reflux-partition-${catalogDatabase}.${catalogTable}" xmlns="uri:oozie:workflow:0.5">
+    <start to="sqoop-hive_to_mysql"/>
+    <kill name="Kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <action name="sqoop-hive_to_mysql">
+        <sqoop xmlns="uri:oozie:sqoop-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>hive.metastore.uris</name>
+                    <value>${hiveMetaStoreUri}</value>
+                </property>
+                <property>
+                    <name>oozie.launcher.mapred.job.queue.name</name>
+                    <value>${launcher_queue}</value>
+                </property>
+                <property>
+                    <name>mapreduce.job.queuename</name>
+                    <value>${mapreduce_queue}</value>
+                </property>
+            </configuration>
+            <command>export  -Dsqoop.export.records.per.statement=1000 -Dsqoop.export.statements.per.transaction=100 --hcatalog-home ${catalogHome} --hcatalog-database ${catalogDatabase} --hcatalog-table ${catalogTable} --hcatalog-partition-keys ${partitionKeys} --hcatalog-partition-values ${partitionValues} --connect ${mysqlUrl} --table ${tableName} --username ${n} --password ${p} --update-key ${updateKeys} --update-mode ${updateMode} -m ${map} --batch ${extra}</command>
+        </sqoop>
+        <ok to="End"/>
+        <error to="Kill"/>
+    </action>
+    <end name="End"/>
+</workflow-app>

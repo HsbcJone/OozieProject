@@ -1,0 +1,28 @@
+<workflow-app name="ETL_HIVE2_ACTION" xmlns="uri:oozie:workflow:0.5">
+    <start to="hive2_action"/>
+    <kill name="Kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill> 
+    <action name="hive2_action" cred="hive2" retry-max="2" retry-interval="1" >
+        <hive2 xmlns="uri:oozie:hive2-action:0.1">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>oozie.launcher.mapred.job.queue.name</name>
+                    <value>${launcher_queue}</value>
+                </property>
+                <property>
+                    <name>mapreduce.job.queuename</name>
+                    <value>${mapreduce_queue}</value>
+                </property>
+            </configuration>
+            <jdbc-url>${hiveServer2Url}</jdbc-url>
+            <password>${hivePassword}</password>
+            <script>/user/mengxp/oozieHive/hive.sql</script>
+        </hive2>
+        <ok to="End"/>
+        <error to="Kill"/>
+    </action>
+    <end name="End"/>
+</workflow-app>
