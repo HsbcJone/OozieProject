@@ -35,7 +35,13 @@ oozie的执行日志 当oozie调度任务失败的时候 需要看具体每个ac
 
 5.hive导入mysql之前 mysql的表必须建立。不然报错
 
-## mysql ->hive
+## oozie-sqoop
+```
+sqoop是同步框架 但是与oozie的结合也是非常合适。比如sqoop就是oozie中的一个action
+sqoop分为sqoop1和sqoop2(不建议生产使用)  sqoop1的客户端 API的方式不够完善 使用起来很不方便
+所以使用sqoop作为异构数据同步解决方案 是与oozie+sqoop共同使用 参考下Demo即可。
+```
+mysql ->hive
 1.mysqlUrl url需要包含database的名字
 2.conf.setProperty("oozie.wf.application.path","hdfs://cdhtest/user/mengxp/mysqlToHive/")
 这个路径下的文件名以workflow.xml为主
@@ -56,4 +62,7 @@ oozie的执行日志 当oozie调度任务失败的时候 需要看具体每个ac
 
 ## oozie-shell
 采用oozie调度执行shell脚本
+
+
+
     

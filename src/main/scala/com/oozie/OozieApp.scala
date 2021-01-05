@@ -13,6 +13,8 @@ import org.junit.Test
  * 5.distcp
  * 6.hbase->hive
  * 7.coodinate
+ *
+ *
  */
 class OozieApp {
   val oozieUrl="http://cdh-10-21-17-94:11000/oozie/"
