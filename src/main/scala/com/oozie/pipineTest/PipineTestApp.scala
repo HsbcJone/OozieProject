@@ -4,6 +4,7 @@ import java.util.Properties
 
 import org.apache.oozie.client.{OozieClient, WorkflowJob}
 import org.junit.Test
+import scala.collection.JavaConversions._
 
 class PipineTestApp {
   val oozieUrl="http://cdh-10-21-17-94:11000/oozie/"
@@ -112,10 +113,26 @@ class PipineTestApp {
     //存入hive的哪张表
     val client = new OozieClient(oozieUrl)
     val oozieJobId = client.run(conf)
+    val workflow=client.getJobInfo(oozieJobId)
+    workflow.getActions.foreach(
+      x=>{
+        println(x.getName)
+      }
+    )
+   println(client.getJobInfo(oozieJobId).getStatus)
     println(conf)
     while (client.getJobInfo(oozieJobId).getStatus.equals(WorkflowJob.Status.RUNNING)) {
-      println("Workflow-sqoop-import job running ...")
-      Thread.sleep(10 * 1000)
+      val action=workflow.getActions.get(0)
+      //println(action)
+      //println(action.getErrorMessage+"zzz"+action.getId)
+      val workflowActionInfo=client.getWorkflowActionInfo(action.getId)
+      println(workflowActionInfo)
+      println(workflowActionInfo.getExternalId)
+      if(workflowActionInfo.getExternalId!=null) {
+        //println(client.getJobLog(workflowActionInfo.getExternalId))
+        //println("Workflow-sqoop-import job running ...")
+        Thread.sleep(10 * 1000)
+      }
     }
     println("Workflow-sqoop-import job completed ...")
     println(client.getJobInfo(oozieJobId))
