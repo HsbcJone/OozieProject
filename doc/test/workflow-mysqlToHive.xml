@@ -1,0 +1,30 @@
+<workflow-app name="MySQL_FULL_TO_HIVE_${hiveDb}.${hiveTable}" xmlns="uri:oozie:workflow:0.5">
+    <start to="sqoop-full_import"/>
+    <kill name="kill">
+        <message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <action name="sqoop-full_import">
+        <sqoop xmlns="uri:oozie:sqoop-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <configuration>
+                <property>
+                    <name>hive.metastore.uris</name>
+                    <value>${hiveMetaStoreUri}</value>
+                </property>
+                <property>
+                    <name>oozie.launcher.mapred.job.queue.name</name>
+                    <value>${launcher_queue}</value>
+                </property>
+                <property>
+                    <name>mapreduce.job.queuename</name>
+                    <value>${mapreduce_queue}</value>
+                </property>
+            </configuration>
+           <command>import -m ${map} --connect ${mysqlUrl}/${mysqlDb}?tinyInt1isBit=false&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf-8 --username ${n} --password ${p} --table ${mysqlTable} --target-dir ${hiveDb}/${hiveTable} --delete-target-dir --hive-import --hive-overwrite --hive-drop-import-delims --hive-database ${hiveDb} --hive-table ${hiveTable}_text_ ${extra}</command>
+        </sqoop>
+        <ok to="end"/>
+        <error to="kill"/>
+    </action>
+    <end name="end"/>
+</workflow-app>
